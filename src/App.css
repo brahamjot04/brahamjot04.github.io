@@ -1,0 +1,187 @@
+* {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    transition-behavior: smooth !important;
+    transition: .3s !important;
+    transition-timing-function: ease !important;
+  }
+  
+  #body {
+    scroll-behavior: smooth;
+  }
+  
+  .org {
+    color: orangered;
+  }
+  
+  .navbar {
+    border-bottom: 2px solid orangered;
+  }
+  
+  .nav {
+    height: 100vh;
+    position: fixed;
+    top: 0%;
+    border: 2px solid orangered !important;
+  }
+  
+  .main-img-i {
+    width: 90%;
+    height: 100%;
+    box-shadow: -10px 10px 5px orangered;
+    border-radius: 60%;
+  }
+  
+  .dote {
+    border-radius: 60%;
+    height: 20px;
+    width: 20px;
+    background: orangered;
+    box-shadow: 0px 0px 20px orangered;
+  }
+  
+  .icon {
+    border: 1px solid black;
+    color: black;
+    background: white;
+    height: 5ch;
+  }
+  
+  .icon:hover {
+    border-color: orangered;
+    background-color: black;
+    color: orangered;
+  }
+  
+  .line {
+    height: auto;
+    width: 0%;
+    border: 1px solid orangered;
+  }
+  
+  .nav-links {
+    height: fit-content;
+  }
+  
+  .nav-link {
+    height: 5vh !important;
+    text-align: center !important;
+    margin: 0% !important;
+    padding: auto !important;
+  }
+  
+  .logo {
+    position: fixed;
+    top: 0%;
+  }
+  
+  .nav-link:hover {
+    background-color: white;
+    text-decoration: none;
+    color: orangered !important;
+    font-size: 150% !important;
+    padding: 0%;
+  }
+  
+  .s-link {
+    border-top: 2px solid white;
+  }
+  
+  .nav-name {
+    position: fixed;
+    top: 0%;
+  }
+  
+  .resume-sub {
+    border: 2px solid orangered;
+  }
+  
+  
+  .resume-btn {
+    border: 1px solid black !important;
+    background: rgba(255, 68, 0, 0.687) !important;
+    padding: 1% 5% 1% 5% !important;
+  }
+  
+  .password-1 {
+    border: none !important;
+    outline: none;
+  }
+  
+  .login-button {
+    position: absolute;
+    bottom: 5%;
+    border: 3px solid orangered;
+    background-color: white;
+    color: orangered;
+  }
+  
+  .login-button:hover {
+    background-color: black;
+    color: white;
+  }
+  
+  .password {
+    border: 1px solid rgba(128, 128, 128, 0.806);
+    border-radius: 5px;
+    background-color: white !important;
+  }
+  
+  .modal-backdrop {
+    display: none;
+  }
+  
+  .box {
+    border: 1px solid orangered;
+    box-shadow: 10px 10px 5px orangered;
+  }
+  
+  .a-link-a {
+    animation: example 4s ease infinite !important;
+    margin-top: 0% !important;
+  }
+  
+  .a-link-b {
+    animation: example1 4s ease infinite !important;
+    margin-top: auto !important;
+  }
+  
+  @keyframes example {
+    50% {
+      margin-top: auto !important;
+    }
+  
+    100% {
+      margin-top: 0% !important;
+    }
+  }
+  
+  @keyframes example1 {
+    50% {
+      margin-top: 0% !important;
+    }
+  
+    100% {
+      margin-top: auto !important;
+    }
+  }
+  
+  @media only screen and (max-width: 771px) {
+    .main {
+      background-color: transparent !important;
+      border: 1px solid black !important;
+      box-shadow: none !important;
+    }
+  
+    .main:first-child {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("./images/T-removebg-preview.png") !important;
+      background-repeat: no-repeat !important;
+      background-size: contain !important;
+      background-position: center !important;
+      color: white;
+    }
+  
+    .password-2 {
+      background-color: white !important;
+      color: black !important;
+    }
+  }
