@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import logo from "./images/T-removebg-preview.png";
+import logo from "./images/1317107.jpeg";
 import { useEffect, useState } from "react";
 
 export default function Nav() {
