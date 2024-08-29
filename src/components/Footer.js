@@ -14,7 +14,7 @@ function Footer() {
     <Container fluid className="footer">
       <Row>
         <Col md="4" className="footer-copywright">
-          <h3>
+          {/* <h3>
             Designed and Developed by{" "}
             <a
               href="https://github.com/soumyajit4419/Portfolio"
@@ -24,7 +24,7 @@ function Footer() {
             >
               <span className="purple">Soumyajit Behera</span>
             </a>
-          </h3>
+          </h3> */}
         </Col>
         <Col md="4" className="footer-copywright">
           <h3>© {year} - Brahamjot Singh</h3>
