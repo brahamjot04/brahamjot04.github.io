@@ -602,7 +602,7 @@ button:focus {
 /* Resume */
 /* --------- */
 
-.resume-section {
+.resume-section, .java-section {
   position: relative !important;
   padding-top: 110px !important;
   padding-bottom: 30px !important;
