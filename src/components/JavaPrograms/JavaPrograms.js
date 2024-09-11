@@ -62,7 +62,7 @@ function JavaPrograms() {
           <Document file={pdf} className="d-flex justify-content-center">
             <Page pageNumber={10} scale={width > 786 ? 1.7 : 0.6} />
           </Document>
-          <Document file={pdf} className="d-flex justify-content-center">
+          {/* <Document file={pdf} className="d-flex justify-content-center">
             <Page pageNumber={11} scale={width > 786 ? 1.7 : 0.6} />
           </Document>
           <Document file={pdf} className="d-flex justify-content-center">
@@ -70,7 +70,7 @@ function JavaPrograms() {
           </Document>
           <Document file={pdf} className="d-flex justify-content-center">
             <Page pageNumber={13} scale={width > 786 ? 1.7 : 0.6} />
-          </Document>
+          </Document> */}
         </Row>
 
         <Row style={{ justifyContent: "center", position: "relative" }}>
