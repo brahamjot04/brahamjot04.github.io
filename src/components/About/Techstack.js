@@ -12,6 +12,9 @@ import {
   DiCss3,
   DiBootstrap,
   DiGithub,
+  DiDrupal,
+  DiWordpress,
+  DiReact,
 } from "react-icons/di";
 import { SiTailwindcss } from "react-icons/si";
 
@@ -37,6 +40,9 @@ function Techstack() {
         <DiPhp />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
+        <DiReact />
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
         <DiMysql />
       </Col>
       <Col xs={4} md={2} className="tech-icons">
@@ -48,12 +54,12 @@ function Techstack() {
       <Col xs={4} md={2} className="tech-icons">
         <DiGithub />
       </Col>
-      {/* <Col xs={4} md={2} className="tech-icons">
-        <SiRedis />
-      </Col> */}
-      {/* <Col xs={4} md={2} className="tech-icons">
-        <SiPostgresql />
-      </Col> */}
+      <Col xs={4} md={2} className="tech-icons">
+        <DiDrupal />
+      </Col>
+      <Col xs={4} md={2} className="tech-icons">
+        <DiWordpress />
+      </Col>
       <Col xs={4} md={2} className="tech-icons">
         <DiPython />
       </Col>
