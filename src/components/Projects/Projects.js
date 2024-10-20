@@ -71,7 +71,7 @@ function Projects() {
               isBlog={false}
               title="90.8 MHz FM Community Radio, GNDEC"
               description="90.8 MHz FM Community Radio Station, Guru Nanak Dev Engineering College, Ludhiana. The website is designed to provide information about the radio station, its programs and team members."
-              // ghLink="https://github.com/soumyajit4419/AI_For_Social_Good"
+              ghLink="https://github.com/brahamjot04/fmcrs-website/"
               demoLink="https://fmcrs.gndec.ac.in/"
             />
           </Col>
