@@ -28,7 +28,7 @@ function Projects() {
               title="Bakeology"
               description="Practice Website Designed during the 6-week training at STEP-GNDEC from July 2022 to August 2022."
               ghLink="https://github.com/brahamjot04/Bakeology"
-              demoLink="https://brahamjot04.github.io/Bakeology/"
+              demoLink="https://bakeology.brahamjot.tech/"
             />
           </Col>
 
@@ -72,7 +72,7 @@ function Projects() {
               title="90.8 MHz FM Community Radio, GNDEC"
               description="90.8 MHz FM Community Radio Station, Guru Nanak Dev Engineering College, Ludhiana. The website is designed to provide information about the radio station, its programs and team members."
               ghLink="https://github.com/brahamjot04/fmcrs-website/"
-              demoLink="https://fmcrs.gndec.ac.in/"
+              // demoLink="https://fmcrs.gndec.ac.in/"
             />
           </Col>
 
