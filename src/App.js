@@ -7,11 +7,13 @@ import Projects from "./components/Projects/Projects";
 import Footer from "./components/Footer";
 import Resume from "./components/Resume/ResumeNew";
 import JavaPrograms from "./components/JavaPrograms/JavaPrograms";
+import Presentations from "./components/presentations/presentations";
+import NotFound from "./components/404NotFound/404.js";
+
 import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate
 } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import "./style.css";
@@ -41,7 +43,9 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/resume" element={<Resume />} />
           <Route path="/javaprograms" element={<JavaPrograms />} />
-          <Route path="*" element={<Navigate to="/"/>} />
+          <Route path="/presentations" element={<Presentations />} />
+          <Route path="/NotFound" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </div>
