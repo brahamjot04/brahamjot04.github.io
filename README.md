@@ -35,10 +35,12 @@
 
 This project was built using these technologies.
 
-- React.js
+- Next.js 16
+- React 19
 - Node.js
+- React-Bootstrap
 - CSS3
-- VsCode
+- VS Code
 - Vercel
 
 ## Features
@@ -57,16 +59,29 @@ Clone down this repository. You will need `node.js` and `git` installed globally
 
 1. Installation: `npm install`
 
-2. In the project directory, you can run: `npm start`
+2. Run in development mode: `npm run dev`
 
-Runs the app in the development mode.\
+3. Create a production build: `npm run build`
+
+4. Start the production server locally: `npm run start`
+
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-The page will reload if you make edits.
 
 ## Usage Instructions
 
-Open the project folder and Navigate to `/src/components/`. <br/>
-You will find all the components used and you can edit your information accordingly.
+Open the project folder and navigate to `/components/` and `/pages/`. <br/>
+You will find the UI components and route pages used in the portfolio and can edit your information accordingly.
+
+## Deployment Notes (Vercel)
+
+- Build/cache output folders are ignored in git (`/.next/`, `/out/`) to avoid large-file push failures.
+- If dependencies are updated, run `npm install` and commit `package-lock.json` before deploying.
+- Current React 19 compatible versions include:
+  - `react-github-calendar@^5.0.5`
+  - `react-parallax-tilt@^1.7.320`
+  - `typewriter-effect@^2.22.0`
+- `react-github-calendar` uses a named export in current versions:
+  - `import { GitHubCalendar } from "react-github-calendar";`
 
 <!-- ### Show your support
 
