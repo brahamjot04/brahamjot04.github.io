@@ -10,7 +10,6 @@ function NotFound() {
         <Container fluid>
           <Row>
             <Col md={12} className="home-about-description">
-              <h1 className="white"></h1>
               <h1 className="">404 Page Not Found</h1>
               <p className="not-found-para">
               <hr />
