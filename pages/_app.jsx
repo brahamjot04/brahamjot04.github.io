@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Preloader from "../components/Pre";
@@ -26,6 +27,7 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
         <Footer />
       </div>
+      <SpeedInsights />
     </>
   );
 }
