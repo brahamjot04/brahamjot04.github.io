@@ -49,3 +49,7 @@ next-env.d.ts
 # IDE
 .vscode/settings.json
 .idea
+
+# SQL file
+/supabase_schema.sql
+/next.config.mjs

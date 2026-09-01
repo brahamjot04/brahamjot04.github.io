@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { AiOutlineSearch, AiOutlineClose, AiOutlineReload } from "react-icons/ai";
 import ProjectCard from "./ProjectCards";
+import ProjectModal from "./ProjectModal";
 import Particle from "../Particle";
 import bakeology from "../../src/Assets/Projects/Bakeology.png";
 import elements from "../../src/Assets/Projects/Elements.png";
@@ -8,86 +10,210 @@ import lms from "../../src/Assets/Projects/LMS.png";
 import vetclinic from "../../src/Assets/Projects/Vetclinic.png";
 import fmcrs from "../../src/Assets/Projects/FMCRS.png";
 import Library from "../../src/Assets/Projects/Library.png";
+import { usePortfolioData } from "../../context/PortfolioContext";
+
+const localImages = {
+  bakeology: bakeology,
+  "library-redesign": Library,
+  Library: Library,
+  lms: lms,
+  vetclinic: vetclinic,
+  fmcrs: fmcrs,
+  elements: elements,
+};
 
 function Projects() {
+  const { data } = usePortfolioData();
+  const projects = useMemo(() => data?.projects || [], [data?.projects]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  // Dynamic Categories calculation
+  const categoryFilters = useMemo(() => {
+    const categories = ["All"];
+    const popularTags = ["Full Stack", "React", "Next.js", "PHP", "Web App", "Java", "Tailwind"];
+    
+    popularTags.forEach((tag) => {
+      const count = projects.filter((p) =>
+        p.tags?.some((t) => t.toLowerCase() === tag.toLowerCase())
+      ).length;
+      if (count > 0) {
+        categories.push(tag);
+      }
+    });
+
+    return categories;
+  }, [projects]);
+
+  // Combined Filter logic
+  const filteredProjects = useMemo(() => {
+    return projects.filter((proj) => {
+      // 1. Category Filter
+      let matchesCategory = true;
+      if (activeCategory !== "All") {
+        matchesCategory = proj.tags?.some(
+          (t) => t.toLowerCase() === activeCategory.toLowerCase()
+        );
+      }
+
+      // 2. Search Query
+      let matchesSearch = true;
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const inTitle = proj.title?.toLowerCase().includes(query);
+        const inDesc = proj.description?.toLowerCase().includes(query);
+        const inTags = proj.tags?.some((t) => t.toLowerCase().includes(query));
+        matchesSearch = inTitle || inDesc || inTags;
+      }
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [projects, activeCategory, searchQuery]);
+
+  const resolveImage = (proj) => {
+    if (proj.image && (proj.image.startsWith("http") || proj.image.startsWith("data:"))) {
+      return proj.image;
+    }
+    if (proj.id && localImages[proj.id]) {
+      return localImages[proj.id];
+    }
+    if (proj.image && proj.image.includes("Bakeology")) return bakeology;
+    if (proj.image && proj.image.includes("Library")) return Library;
+    if (proj.image && proj.image.includes("LMS")) return lms;
+    if (proj.image && proj.image.includes("Vetclinic")) return vetclinic;
+    if (proj.image && proj.image.includes("FMCRS")) return fmcrs;
+    if (proj.image && proj.image.includes("Elements")) return elements;
+    return bakeology;
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setActiveCategory("All");
+  };
+
   return (
     <Container fluid className="project-section">
       <Particle />
       <Container>
-        <h1 className="project-heading">
-          My Recent <strong className="purple">Works </strong>
-        </h1>
-        <p className="section-lead" style={{ marginBottom: "1.4rem" }}>
-          A curated mix of product, web, and academic builds I&apos;ve shipped
-          recently.
-        </p>
-        <Row style={{ justifyContent: "center", paddingBottom: "10px" }}>
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={bakeology}
-              isBlog={false}
-              title="Bakeology"
-              description="Practice Website Designed during the 6-week training at STEP-GNDEC from July 2022 to August 2022."
-              ghLink="https://github.com/brahamjot04/Bakeology"
-              demoLink="https://bakeology.brahamjot.tech/"
-            />
-          </Col>
+        <div className="text-center mb-4">
+          <h1 className="project-heading">
+            My Recent <strong className="purple">Works </strong>
+          </h1>
+          <p className="section-lead mx-auto text-center" style={{ marginBottom: "1.4rem" }}>
+            A curated showcase of full-stack web applications, interactive platforms, and academic software systems.
+          </p>
+        </div>
 
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={Library}
-              isBlog={false}
-              title="Library Webpage Redesign"
-              description="Redesigned the library page of the Guru Nanak Dev Polytechnic College website."
-              // ghLink="https://github.com/brahamjot04/Library-Management-System"
-              demoLink="https://gndpoly.org/library.php?library=home"
+        {/* SEARCH BAR */}
+        <div className="project-search-container">
+          <div className="project-search-input-box">
+            <AiOutlineSearch className="project-search-icon" />
+            <input
+              type="text"
+              className="project-search-input"
+              placeholder="Search projects by title, tech stack (e.g. React, Supabase, PHP)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </Col>
+            {searchQuery && (
+              <button
+                type="button"
+                className="project-search-clear-btn"
+                onClick={() => setSearchQuery("")}
+                title="Clear search"
+              >
+                <AiOutlineClose />
+              </button>
+            )}
+          </div>
+        </div>
 
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={lms}
-              isBlog={false}
-              title="Library Management System"
-              description="A web-based Library Management System developed using HTML, CSS, JavaScript, PHP, and MySQL. The system allows the librarian to manage the library's books, members, and transactions."
-              ghLink="https://github.com/brahamjot04/Library-Management-System"
-              // demoLink="https://editor.soumya-jit.tech/"
-            />
-          </Col>
+        {/* CATEGORY FILTER PILLS */}
+        <div className="project-filter-pills">
+          {categoryFilters.map((cat) => {
+            const count =
+              cat === "All"
+                ? projects.length
+                : projects.filter((p) =>
+                    p.tags?.some((t) => t.toLowerCase() === cat.toLowerCase())
+                  ).length;
+            const isActive = activeCategory === cat;
 
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={vetclinic}
-              isBlog={false}
-              title="Vetclinic"
-              description="A web-based Veterinary Clinic Management System developed using HTML, CSS, JavaScript, PHP, and MySQL. The system allows the veterinarian to manage the clinic's pets, owners, and appointments."
-              ghLink="https://github.com/brahamjot04/Vetclinic"
-              // demoLink="https://plant49-ai.herokuapp.com/"
-            />
-          </Col>
+            return (
+              <button
+                key={cat}
+                type="button"
+                className={`project-filter-btn ${isActive ? "active" : ""}`}
+                onClick={() => setActiveCategory(cat)}
+              >
+                <span>{cat}</span>
+                <span className="project-filter-count">{count}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={fmcrs}
-              isBlog={false}
-              title="90.8 MHz FM Community Radio, GNDEC"
-              description="90.8 MHz FM Community Radio Station, Guru Nanak Dev Engineering College, Ludhiana. The website is designed to provide information about the radio station, its programs and team members."
-              ghLink="https://github.com/brahamjot04/fmcrs-website/"
-              // demoLink="https://fmcrs.gndec.ac.in/"
-            />
-          </Col>
+        {/* PROJECTS GRID OR EMPTY STATE */}
+        {filteredProjects.length > 0 ? (
+          <Row style={{ justifyContent: "center", paddingBottom: "10px" }}>
+            {filteredProjects.map((proj, idx) => {
+              const imageSrc = resolveImage(proj);
+              return (
+                <Col md={4} key={proj.id || idx} className="project-card">
+                  <ProjectCard
+                    imgPath={imageSrc}
+                    isBlog={false}
+                    title={proj.title}
+                    description={proj.description}
+                    ghLink={proj.ghLink}
+                    demoLink={proj.demoLink}
+                    tags={proj.tags}
+                    activeTag={activeCategory}
+                    onTagClick={(tag) => {
+                      setActiveCategory(tag);
+                      setSearchQuery("");
+                    }}
+                    onOpenDetails={() =>
+                      setSelectedProject({
+                        ...proj,
+                        imageSrc,
+                      })
+                    }
+                    featured={idx === 0 || proj.featured}
+                  />
+                </Col>
+              );
+            })}
+          </Row>
+        ) : (
+          <div className="project-empty-state">
+            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🔍</div>
+            <h4 className="fw-bold text-light mb-2">No Matching Projects Found</h4>
+            <p className="text-muted small mb-3">
+              We couldn&apos;t find any project matching &quot;{searchQuery || activeCategory}&quot;. Try adjusting your search term or filter.
+            </p>
+            <button
+              type="button"
+              className="admin-btn admin-btn-primary admin-btn-sm"
+              onClick={handleResetFilters}
+            >
+              <AiOutlineReload /> Reset Filters
+            </button>
+          </div>
+        )}
 
-          <Col md={4} className="project-card">
-            <ProjectCard
-              imgPath={elements}
-              isBlog={false}
-              title="Elements: Kitchens That Inspire"
-              description="Elements: Kitchens That Inspire is a website for a Canadian-based kitchen design company. The website is designed to showcase the company's kitchen designs and services."
-              // ghLink="https://github.com/soumyajit4419/Face_And_Emotion_Detection"
-              demoLink="https://emfinc.ca/"
-            />
-          </Col>
-        </Row>
+        {/* INTERACTIVE CASE STUDY MODAL */}
+        <ProjectModal
+          project={selectedProject}
+          show={Boolean(selectedProject)}
+          onHide={() => setSelectedProject(null)}
+          onTagClick={(tag) => {
+            setActiveCategory(tag);
+            setSearchQuery("");
+          }}
+        />
       </Container>
     </Container>
   );

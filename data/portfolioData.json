@@ -1,0 +1,126 @@
+{
+  "personal": {
+    "bio": {
+      "headline": "A QUICK INTRODUCTION",
+      "activities": [
+        "Playing Games",
+        "Video Editing",
+        "Anchoring"
+      ],
+      "paragraphs": [
+        "I am a B.Tech in Information Technology graduate from Guru Nanak Dev Engineering College, Ludhiana, actively seeking full-time Software Developer and Full Stack opportunities.",
+        "I have strong foundations in core languages and frameworks including JavaScript, Flutter, PHP, C++, React, and Firebase.",
+        "My fields of interest are architecting modern Web & Mobile Applications, exploring Cyber Security, and crafting creative visual content with Adobe Premiere Pro.",
+        "Whenever possible, I love turning complex ideas into clean, functional products using Flutter, React, and modern backend services."
+      ]
+    },
+    "name": "Brahamjot Singh",
+    "email": "admin@brahamjot.dev",
+    "tagline": "Building practical web products, exploring security, and shipping polished digital experiences.",
+    "location": "Punjab, India",
+    "education": {
+      "degree": "B.Tech in Information Technology",
+      "status": "Graduate / Fresher",
+      "college": "Guru Nanak Dev Engineering College, Ludhiana"
+    },
+    "firstName": "Brahamjot",
+    "resumePdf": "https://fvopyydvcietjwhehjvk.supabase.co/storage/v1/object/public/portfolio_assets/resumes/1788281843355_Brahamjot_CV.pdf",
+    "targetRoles": [
+      "Software Developer",
+      "Full Stack Developer",
+      "Flutter Developer",
+      "Web Developer"
+    ]
+  },
+  "projects": [
+    {
+      "id": "fmcrs",
+      "tags": [
+        "PHP",
+        "Web Development"
+      ],
+      "image": "/src/Assets/Projects/FMCRS.png",
+      "title": "90.8 MHz FM Community Radio, GNDEC",
+      "ghLink": "https://github.com/brahamjot04/fmcrs-website/",
+      "demoLink": "https://fmcrs.gndec.ac.in",
+      "featured": true,
+      "description": "90.8 MHz FM Community Radio Station website providing schedules, live stream, and team details."
+    },
+    {
+      "id": "elements",
+      "tags": [
+        "Commercial",
+        "Web Design",
+        "Client Project"
+      ],
+      "image": "/src/Assets/Projects/Elements.png",
+      "title": "Elements: Kitchens That Inspire",
+      "ghLink": "",
+      "demoLink": "https://emfinc.ca/",
+      "featured": true,
+      "description": "Website for a Canadian-based kitchen design company to showcase contemporary designs and services."
+    },
+    {
+      "id": "bakeology",
+      "tags": [
+        "Web Design",
+        "HTML/CSS",
+        "Bootstrap"
+      ],
+      "image": "/src/Assets/Projects/Bakeology.png",
+      "title": "Bakeology",
+      "ghLink": "https://github.com/brahamjot04/Bakeology",
+      "demoLink": "https://bakeology.brahamjot.tech/",
+      "featured": true,
+      "description": "Practice Website Designed during the 6-week training at STEP-GNDEC from July 2022 to August 2022."
+    },
+    {
+      "id": "library-redesign",
+      "tags": [
+        "PHP",
+        "UI/UX",
+        "Web Redesign"
+      ],
+      "image": "/src/Assets/Projects/Library.png",
+      "title": "Library Webpage Redesign",
+      "ghLink": "",
+      "demoLink": "https://gndpoly.org/library.php?library=home",
+      "featured": true,
+      "description": "Redesigned the library page of the Guru Nanak Dev Polytechnic College website for better accessibility."
+    },
+    {
+      "id": "lms",
+      "tags": [
+        "PHP",
+        "MySQL",
+        "JavaScript",
+        "Full Stack"
+      ],
+      "image": "/src/Assets/Projects/LMS.png",
+      "title": "Library Management System",
+      "ghLink": "https://github.com/brahamjot04/Library-Management-System",
+      "demoLink": "",
+      "featured": true,
+      "description": "A web-based Library Management System developed using HTML, CSS, JavaScript, PHP, and MySQL."
+    },
+    {
+      "id": "vetclinic",
+      "tags": [
+        "PHP",
+        "MySQL",
+        "Management System"
+      ],
+      "image": "/src/Assets/Projects/Vetclinic.png",
+      "title": "Vetclinic",
+      "ghLink": "https://github.com/brahamjot04/Vetclinic",
+      "demoLink": "",
+      "featured": true,
+      "description": "A web-based Veterinary Clinic Management System developed using HTML, CSS, JavaScript, PHP, and MySQL."
+    }
+  ],
+  "socialLinks": {
+    "github": "https://github.com/brahamjot04",
+    "linkedin": "https://www.linkedin.com/in/brahamjotsingh/",
+    "instagram": "https://www.instagram.com/brahamjot_2004/"
+  }
+}

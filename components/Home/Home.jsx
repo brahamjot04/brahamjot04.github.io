@@ -6,8 +6,12 @@ import homeLogo from "../../src/Assets/home-main.svg";
 import Particle from "../Particle";
 import Home2 from "./Home2";
 import Type from "./Type";
+import { usePortfolioData } from "../../context/PortfolioContext";
 
 function Home() {
+  const { data } = usePortfolioData();
+  const personal = data?.personal || {};
+
   return (
     <section>
       <Container fluid className="home-section" id="home">
@@ -24,12 +28,11 @@ function Home() {
 
               <h1 className="heading-name">
                 I&apos;M
-                <strong className="main-name"> BRAHAMJOT SINGH</strong>
+                <strong className="main-name"> {personal.name?.toUpperCase() || "BRAHAMJOT SINGH"}</strong>
               </h1>
 
               <p className="section-lead">
-                Building practical web products, exploring security, and shipping
-                polished digital experiences.
+                {personal.tagline || "Building practical web products, exploring security, and shipping polished digital experiences."}
               </p>
 
               <div style={{ padding: 50, textAlign: "left" }}>
