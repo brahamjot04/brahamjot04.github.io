@@ -630,6 +630,15 @@ export default function AdminPanel() {
             </div>
 
             <div className="d-flex align-items-center gap-2 flex-wrap">
+              <a
+                href="https://brahamjot.dev"
+                target="_blank"
+                rel="noreferrer"
+                className="admin-btn admin-btn-secondary admin-btn-sm text-decoration-none"
+                title="Open main portfolio site in new tab"
+              >
+                <FaExternalLinkAlt size={11} /> View Live Portfolio
+              </a>
               <button
                 type="button"
                 className="admin-btn admin-btn-secondary admin-btn-sm"
