@@ -28,6 +28,7 @@ function ContactForm() {
     message: "",
   });
 
+  const [honeypot, setHoneypot] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -43,6 +44,24 @@ function ContactForm() {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMsg("");
+
+    // Bot trap: if honeypot is filled, silently discard without inserting
+    if (honeypot) {
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      }, 500);
+      return;
+    }
+
+    // Cooldown check (30 seconds between submissions)
+    const lastSubmitTime = localStorage.getItem("last_contact_submit_ts");
+    if (lastSubmitTime && Date.now() - parseInt(lastSubmitTime, 10) < 30000) {
+      const waitSec = Math.ceil((30000 - (Date.now() - parseInt(lastSubmitTime, 10))) / 1000);
+      setErrorMsg(`Please wait ${waitSec} seconds before sending another message.`);
+      setIsSubmitting(false);
+      return;
+    }
 
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
       setErrorMsg("Please fill in all required fields (Name, Email, Message).");
@@ -75,6 +94,7 @@ function ContactForm() {
         )}&body=${encodeURIComponent(mailBody)}`;
       }
 
+      localStorage.setItem("last_contact_submit_ts", Date.now().toString());
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (err) {
@@ -156,6 +176,28 @@ function ContactForm() {
         </div>
       ) : (
         <Form onSubmit={handleSubmit} className="text-start">
+          {/* Honeypot field for bot protection (invisible to humans) */}
+          <div
+            style={{
+              position: "absolute",
+              opacity: 0,
+              pointerEvents: "none",
+              height: 0,
+              width: 0,
+              zIndex: -1,
+            }}
+            aria-hidden="true"
+          >
+            <input
+              type="text"
+              name="company_fax_hp"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
+
           {errorMsg && (
             <Alert variant="danger" className="py-2 small">
               {errorMsg}
