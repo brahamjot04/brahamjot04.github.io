@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Container,
   Row,
@@ -43,6 +44,7 @@ import {
   FaRocket,
   FaGraduationCap,
   FaExternalLinkAlt,
+  FaArrowLeft,
 } from "react-icons/fa";
 import { getSocialIcon, PRESET_PLATFORMS } from "../../lib/socialIcons";
 
@@ -630,15 +632,13 @@ export default function AdminPanel() {
             </div>
 
             <div className="d-flex align-items-center gap-2 flex-wrap">
-              <a
-                href="https://brahamjot.dev"
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/"
                 className="admin-btn admin-btn-secondary admin-btn-sm text-decoration-none"
-                title="Open main portfolio site in new tab"
+                title="Return to live portfolio"
               >
-                <FaExternalLinkAlt size={11} /> View Live Portfolio
-              </a>
+                <FaArrowLeft size={11} /> Back to Live Portfolio
+              </Link>
               <button
                 type="button"
                 className="admin-btn admin-btn-secondary admin-btn-sm"

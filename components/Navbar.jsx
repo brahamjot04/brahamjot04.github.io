@@ -80,7 +80,7 @@ function NavBar() {
     setAccountMenuOpen(false);
     updateExpanded(false);
     await logout();
-    if (router.pathname === "/admin") {
+    if (router.pathname === "/console" || router.pathname === "/admin") {
       router.push("/");
     }
   };
@@ -204,20 +204,18 @@ function NavBar() {
                       </div>
                     </div>
                     <div className="dropdown-divider-line"></div>
-                    <a
-                      href={
-                        typeof window !== "undefined" && window.location.hostname.includes("localhost")
-                          ? `http://admin.localhost:${window.location.port || 3000}`
-                          : "https://admin.brahamjot.dev"
-                      }
-                      className="navbar-dropdown-item text-decoration-none"
+                    <Link
+                      href="/console"
+                      className={`navbar-dropdown-item ${
+                        router.pathname === "/console" ? "active" : ""
+                      }`}
                       onClick={() => {
                         setAccountMenuOpen(false);
                         updateExpanded(false);
                       }}
                     >
-                      <AiOutlineDashboard /> Admin Studio
-                    </a>
+                      <AiOutlineDashboard /> Admin Console
+                    </Link>
                     <button
                       type="button"
                       className="navbar-dropdown-item text-danger"
