@@ -497,6 +497,23 @@ a:focus-visible {
   height: auto;
 }
 
+.avatar-glow {
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  border: 4px solid var(--accent) !important;
+  box-shadow: 0 0 20px var(--accent) !important;
+  object-fit: cover !important;
+  height: auto !important;
+  width: 100% !important;
+  max-width: 360px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-glow:hover {
+  box-shadow: 0 0 35px var(--accent);
+  transform: scale(1.02);
+}
+
 .img-fluid {
   max-width: 100%;
   height: auto;
@@ -1263,6 +1280,173 @@ a:focus-visible {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   color: var(--text-main);
+}
+
+/* ==========================================================================
+   AUTHENTIC LINUX TERMINAL LOGIN CONSOLE
+   ========================================================================== */
+.cli-terminal-page-wrapper {
+  padding-top: 9.5rem !important;
+  padding-bottom: 5rem !important;
+  min-height: 88vh;
+  position: relative;
+  z-index: 1;
+}
+
+.terminal-container {
+  perspective: 1000px;
+}
+
+.cli-terminal-window {
+  background: #06090f;
+  border: 1px solid rgba(0, 242, 254, 0.22);
+  border-radius: 8px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 242, 254, 0.08);
+  overflow: hidden;
+  font-family: ui-monospace, "Cascadia Code", "Fira Code", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  cursor: text;
+}
+
+.cli-terminal-titlebar {
+  background: #0c111c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  user-select: none;
+}
+
+.cli-traffic-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.cli-dot-red {
+  background: #ff5f56;
+  box-shadow: 0 0 4px rgba(255, 95, 86, 0.5);
+}
+
+.cli-dot-yellow {
+  background: #ffbd2e;
+  box-shadow: 0 0 4px rgba(255, 189, 46, 0.5);
+}
+
+.cli-dot-green {
+  background: #27c93f;
+  box-shadow: 0 0 4px rgba(39, 201, 63, 0.5);
+}
+
+.cli-titlebar-text {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.cli-titlebar-right {
+  font-size: 0.72rem;
+}
+
+.cli-terminal-screen {
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  background: linear-gradient(180deg, rgba(6, 9, 15, 0.98) 0%, rgba(3, 5, 10, 0.98) 100%);
+  min-height: 380px;
+}
+
+.cli-motd {
+  user-select: none;
+  line-height: 1.6;
+}
+
+.cli-motd-stats {
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.cli-motd-tip {
+  font-size: 0.82rem;
+}
+
+.cli-output-pre {
+  background: transparent;
+  color: #94a3b8;
+  font-family: inherit;
+  font-size: 0.86rem;
+  padding: 0;
+  margin: 0;
+}
+
+.cli-auth-error {
+  color: #ef4444 !important;
+  font-weight: bold;
+}
+
+.cli-line {
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+}
+
+.cli-prompt-label {
+  color: #4ade80;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.cli-inline-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #f8fafc !important;
+  font-family: inherit !important;
+  font-size: 0.92rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  caret-color: #4ade80;
+}
+
+.cli-inline-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.cli-cursor {
+  color: #4ade80;
+  animation: cliCursorBlink 1s infinite steps(1);
+  font-weight: bold;
+  user-select: none;
+  margin-left: 2px;
+}
+
+@keyframes cliCursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cli-loading-line {
+  font-style: italic;
+  font-size: 0.88rem;
+}
+
+.cli-kbd {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.cli-exit-link {
+  color: #64748b;
+  font-size: 0.82rem;
+  transition: color 0.2s ease;
+}
+
+.cli-exit-link:hover {
+  color: #00f2fe;
 }
 
 .admin-section-card {
@@ -2483,5 +2667,149 @@ a:focus-visible {
   transform: translateY(-4px) scale(1.02);
 }
 
+/* ==========================================================================
+   INTERACTIVE RESUME & TIMELINE STYLES
+   ========================================================================== */
+.resume-view-switcher {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
 
+.resume-tab-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #94a3b8;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+}
 
+.resume-tab-btn.active {
+  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  color: #04070e;
+  box-shadow: 0 4px 14px rgba(0, 242, 254, 0.35);
+}
+
+.resume-tab-btn:hover:not(.active) {
+  color: #e2e8f0;
+}
+
+.resume-interactive-card {
+  background: rgba(14, 22, 38, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.resume-interactive-card:hover {
+  border-color: rgba(0, 242, 254, 0.3) !important;
+  transform: translateY(-2px);
+}
+
+.resume-project-item {
+  background: rgba(7, 12, 22, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.2s ease;
+}
+
+.resume-project-item:hover {
+  border-color: rgba(0, 242, 254, 0.25);
+  background: rgba(10, 18, 32, 0.85);
+}
+/* Fullscreen Terminal Easter Egg */
+.fullscreen-terminal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullscreen-terminal-modal {
+  width: 95vw;
+  height: 92vh;
+  background: rgba(10, 10, 12, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fullscreen-terminal-titlebar {
+  background: rgba(20, 20, 24, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.fullscreen-terminal-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  color: #a9b2c3;
+  text-align: left;
+}
+
+.fullscreen-terminal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.fullscreen-terminal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.fullscreen-terminal-body::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.fullscreen-terminal-input {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
+/* Terminal Launcher Button */
+.terminal-launcher-btn {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(20, 20, 24, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a9b2c3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 999;
+  backdrop-filter: blur(5px);
+  transition: all 0.2s ease;
+}
+
+.terminal-launcher-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: scale(1.1);
+}

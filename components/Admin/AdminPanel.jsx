@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   Container,
   Row,
@@ -60,11 +61,85 @@ export default function AdminPanel() {
   const [user, setUser] = useState(null);
 
   // Auth States
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // CLI Terminal Interaction States
+  const [terminalHistory, setTerminalHistory] = useState([]);
+  const [activeCliField, setActiveCliField] = useState("username");
+  const usernameInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+  const terminalBodyRef = useRef(null);
+
+  const handleUsernameKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = email.trim().toLowerCase();
+      if (val === "help") {
+        setTerminalHistory((prev) => [
+          ...prev,
+          { type: "cmd", text: "login: help" },
+          {
+            type: "info",
+            text: "Commands:\n  help    - display available commands\n  clear   - clear console screen\n  exit    - return to live portfolio\n  status  - show system hardware status",
+          },
+        ]);
+        setEmail("");
+        return;
+      }
+      if (val === "exit") {
+        router.push("/");
+        return;
+      }
+      if (val === "clear") {
+        setTerminalHistory([]);
+        setEmail("");
+        setAuthError("");
+        return;
+      }
+      if (val === "status") {
+        setTerminalHistory((prev) => [
+          ...prev,
+          { type: "cmd", text: "login: status" },
+          {
+            type: "info",
+            text: "System status: ONLINE\nKernel: Linux 6.8.0-generic\nTTY: /dev/tty1\nArchitecture: x86_64",
+          },
+        ]);
+        setEmail("");
+        return;
+      }
+      if (email.trim()) {
+        setActiveCliField("password");
+        setTimeout(() => passwordInputRef.current?.focus(), 30);
+      }
+    } else if (e.key === "ArrowDown") {
+      setActiveCliField("password");
+      setTimeout(() => passwordInputRef.current?.focus(), 30);
+    }
+  };
+
+  const handlePasswordKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (!email.trim()) {
+        setActiveCliField("username");
+        usernameInputRef.current?.focus();
+        return;
+      }
+      handleSupabaseLogin(e);
+    } else if (e.key === "ArrowUp") {
+      setActiveCliField("username");
+      setTimeout(() => usernameInputRef.current?.focus(), 30);
+    } else if (e.key === "Backspace" && password === "") {
+      setActiveCliField("username");
+      setTimeout(() => usernameInputRef.current?.focus(), 30);
+    }
+  };
 
   // UI States
   const [activeTab, setActiveTab] = useState("overview"); // overview, personal, projects, resume, socials, database, inbox
@@ -148,6 +223,29 @@ export default function AdminPanel() {
     }
   }, []);
 
+  // ---------------- Security: 30-Minute Inactivity Idle Auto-Logout ----------------
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let timeoutId;
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      // 30 minutes in ms
+      timeoutId = setTimeout(() => {
+        handleLogout();
+      }, 30 * 60 * 1000);
+    };
+
+    const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+    events.forEach((evt) => window.addEventListener(evt, resetTimer, { passive: true }));
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      events.forEach((evt) => window.removeEventListener(evt, resetTimer));
+    };
+  }, [isAuthenticated]);
+
   // ---------------- Authentication Handlers ----------------
   const handleSupabaseLogin = async (e) => {
     e.preventDefault();
@@ -155,7 +253,7 @@ export default function AdminPanel() {
     setAuthError("");
 
     if (!isSupabaseConfigured || !supabase) {
-      setAuthError("Supabase keys are missing in .env.local.");
+      setAuthError("System offline: authorization service unavailable.");
       setIsAuthLoading(false);
       return;
     }
@@ -172,7 +270,10 @@ export default function AdminPanel() {
       if (error) throw error;
       setIsAuthenticated(true);
     } catch (err) {
-      setAuthError(err.message || "Failed to authenticate with Supabase.");
+      setAuthError(err?.message?.includes("Invalid login") ? "Login incorrect" : err.message || "Login incorrect");
+      setPassword("");
+      setActiveCliField("username");
+      setTimeout(() => usernameInputRef.current?.focus(), 50);
     } finally {
       setIsAuthLoading(false);
     }
@@ -297,6 +398,87 @@ export default function AdminPanel() {
         ...prev.personal,
         education: { ...prev.personal.education, [field]: value },
       },
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const addEducationItem = () => {
+    const newItem = {
+      id: `edu_${Date.now()}`,
+      degree: "Bachelor of Technology",
+      institution: "Institution Name",
+      startYear: "2020",
+      endYear: "2024",
+      status: "Graduated",
+      grade: "",
+      description: "Coursework and academic highlights...",
+    };
+    setData((prev) => ({
+      ...prev,
+      educationList: [...(prev.educationList || []), newItem],
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const removeEducationItem = (index) => {
+    setData((prev) => ({
+      ...prev,
+      educationList: (prev.educationList || []).filter((_, i) => i !== index),
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const updateEducationItem = (index, field, value) => {
+    setData((prev) => {
+      const currentList = prev.educationList && prev.educationList.length > 0
+        ? [...prev.educationList]
+        : [
+            {
+              id: "edu_1",
+              degree: prev.personal?.education?.degree || "B.Tech in Information Technology",
+              institution: prev.personal?.education?.college || "Guru Nanak Dev Engineering College, Ludhiana",
+              startYear: "2020",
+              endYear: "2024",
+              status: prev.personal?.education?.status || "Graduate / Fresher",
+              grade: "",
+              description: "",
+            },
+          ];
+
+      currentList[index] = {
+        ...currentList[index],
+        [field]: value,
+      };
+
+      const updatedPersonal = { ...prev.personal };
+      if (index === 0 && (field === "degree" || field === "institution" || field === "status")) {
+        updatedPersonal.education = {
+          ...updatedPersonal.education,
+          degree: field === "degree" ? value : updatedPersonal.education?.degree,
+          college: field === "institution" ? value : updatedPersonal.education?.college,
+          status: field === "status" ? value : updatedPersonal.education?.status,
+        };
+      }
+
+      return {
+        ...prev,
+        personal: updatedPersonal,
+        educationList: currentList,
+      };
+    });
+    setHasUnsavedChanges(true);
+  };
+
+  const moveEducationItem = (index, direction) => {
+    const list = [...(data.educationList || [])];
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIndex];
+    list[targetIndex] = temp;
+    setData((prev) => ({
+      ...prev,
+      educationList: list,
     }));
     setHasUnsavedChanges(true);
   };
@@ -521,87 +703,157 @@ export default function AdminPanel() {
     setHasUnsavedChanges(true);
   };
 
-  // ---------------- Render Authentication Lock Screen ----------------
+  // ---------------- Render Authentication Lock Screen (Authentic Linux Terminal) ----------------
   if (!isAuthenticated) {
     return (
       <Container
-        className="d-flex align-items-center justify-content-center py-5"
-        style={{ minHeight: "85vh" }}
+        className="d-flex align-items-center justify-content-center cli-terminal-page-wrapper"
+        style={{ minHeight: "85vh", paddingTop: "8.5rem", paddingBottom: "4rem" }}
       >
-        <Card
-          className="admin-login-card p-4 p-md-5"
-          style={{ maxWidth: "460px", width: "100%" }}
-        >
-          <div className="text-center mb-4">
-            <div className="admin-lock-badge mb-3">
-              <AiOutlineLock style={{ fontSize: "2rem", color: "var(--accent)" }} />
+        <div className="terminal-container" style={{ maxWidth: "660px", width: "100%" }}>
+          {/* TERMINAL CHASSIS */}
+          <div
+            className="cli-terminal-window"
+            onClick={() => {
+              if (activeCliField === "password") {
+                passwordInputRef.current?.focus();
+              } else {
+                usernameInputRef.current?.focus();
+              }
+            }}
+          >
+            {/* WINDOW TOP BAR */}
+            <div className="cli-terminal-titlebar d-flex align-items-center justify-content-between px-3 py-2">
+              <div className="d-flex align-items-center gap-2">
+                <span className="cli-traffic-dot cli-dot-red"></span>
+                <span className="cli-traffic-dot cli-dot-yellow"></span>
+                <span className="cli-traffic-dot cli-dot-green"></span>
+              </div>
+              <div className="cli-titlebar-text font-monospace">
+                brahamjot@server:~ (tty1)
+              </div>
+              <div className="cli-titlebar-right font-monospace text-muted">
+                80x24
+              </div>
             </div>
-            <h2 className="fw-bold mb-1">
-              Portfolio <span className="purple">Admin</span>
-            </h2>
-            <p className="text-muted small">
-              Sign in with your Supabase credentials to manage your live portfolio
-            </p>
-            {isConfigured ? (
-              <Badge bg="success" className="px-3 py-2 rounded-pill">
-                <AiOutlineCheckCircle /> Supabase Connected
-              </Badge>
-            ) : (
-              <Badge bg="danger" className="px-3 py-2 rounded-pill">
-                <AiOutlineWarning /> Setup Keys in .env.local
-              </Badge>
-            )}
-          </div>
 
-          {authError && (
-            <Alert variant="danger" className="py-2 small">
-              {authError}
-            </Alert>
-          )}
+            {/* TERMINAL SCREEN */}
+            <div className="cli-terminal-screen p-4 font-monospace" ref={terminalBodyRef}>
+              {/* SYSTEM MOTD BANNER */}
+              <div className="cli-motd mb-3">
+                <div className="text-secondary">Linux brahamjot-server 6.8.0-generic #45-Ubuntu SMP PREEMPT_DYNAMIC x86_64</div>
+                <div className="text-light mt-1">Welcome to brahamjotOS LTS (GNU/Linux 6.8.0 x86_64)</div>
+                <div className="cli-motd-tip mt-2 text-muted">
+                  Type <span className="text-warning">&apos;help&apos;</span> for commands or log in below.
+                </div>
+              </div>
 
-          <Form onSubmit={handleSupabaseLogin}>
-            <Form.Group className="mb-3">
-              <Form.Label className="small text-muted fw-bold">
-                USERNAME OR EMAIL
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="e.g. brahamjot or name@domain.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="admin-input"
-                required
-                autoFocus
-              />
-            </Form.Group>
-            <Form.Group className="mb-4">
-              <Form.Label className="small text-muted fw-bold">
-                PASSWORD
-              </Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="admin-input"
-                required
-              />
-            </Form.Group>
-            <button
-              type="submit"
-              className="admin-btn admin-btn-primary w-100 py-2 fw-bold"
-              disabled={isAuthLoading || !isConfigured}
-            >
-              {isAuthLoading ? (
-                <Spinner size="sm" animation="border" />
-              ) : (
-                <>
-                  <AiOutlineUnlock /> Sign In with Supabase
-                </>
+              {/* COMMAND HISTORY OUTPUT */}
+              {terminalHistory.map((item, idx) => (
+                <div key={idx} className="cli-history-line mb-2">
+                  {item.type === "cmd" && (
+                    <div className="text-light">
+                      <span className="text-success">brahamjot-server</span> {item.text}
+                    </div>
+                  )}
+                  {item.type === "info" && (
+                    <pre className="cli-output-pre text-muted mb-0">{item.text}</pre>
+                  )}
+                </div>
+              ))}
+
+              {/* AUTH ERROR IF ANY */}
+              {authError && (
+                <div className="cli-auth-error mb-2 text-danger fw-bold">
+                  Login incorrect
+                </div>
               )}
-            </button>
-          </Form>
-        </Card>
+
+              {/* AUTHENTICATION PROMPTS */}
+              <form onSubmit={handleSupabaseLogin} className="cli-form mt-2">
+                {/* USERNAME LINE */}
+                <div
+                  className={`cli-line d-flex align-items-center ${
+                    activeCliField === "username" ? "cli-line-active" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCliField("username");
+                    usernameInputRef.current?.focus();
+                  }}
+                >
+                  <label className="cli-prompt-label me-2 mb-0">
+                    brahamjot-server login:
+                  </label>
+                  <input
+                    ref={usernameInputRef}
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={handleUsernameKeyDown}
+                    onFocus={() => setActiveCliField("username")}
+                    className="cli-inline-input flex-grow-1"
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    spellCheck="false"
+                    autoFocus
+                    disabled={isAuthLoading}
+                  />
+                  {activeCliField === "username" && !email && (
+                    <span className="cli-cursor">_</span>
+                  )}
+                </div>
+
+                {/* PASSWORD LINE */}
+                <div
+                  className={`cli-line d-flex align-items-center mt-2 ${
+                    activeCliField === "password" ? "cli-line-active" : ""
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCliField("password");
+                    passwordInputRef.current?.focus();
+                  }}
+                >
+                  <label className="cli-prompt-label me-2 mb-0">
+                    Password:
+                  </label>
+                  <input
+                    ref={passwordInputRef}
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handlePasswordKeyDown}
+                    onFocus={() => setActiveCliField("password")}
+                    className="cli-inline-input flex-grow-1"
+                    autoComplete="current-password"
+                    disabled={isAuthLoading}
+                  />
+                  {activeCliField === "password" && (
+                    <span className="cli-cursor">_</span>
+                  )}
+                </div>
+
+                {/* STATUS DURING AUTH */}
+                {isAuthLoading && (
+                  <div className="cli-loading-line text-info mt-3">
+                    [ ... ] Verifying credentials and loading console environment...
+                  </div>
+                )}
+              </form>
+
+              {/* TERMINAL FOOTER / HINT */}
+              <div className="cli-footer mt-4 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center text-muted" style={{ fontSize: "0.82rem" }}>
+                <span>
+                  Press <kbd className="cli-kbd">Enter ↵</kbd> to execute
+                </span>
+                <Link href="/" className="cli-exit-link text-decoration-none">
+                  $ exit (return to portfolio)
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </Container>
     );
   }
@@ -729,6 +981,7 @@ export default function AdminPanel() {
           {[
             { key: "overview", label: "📊 Overview" },
             { key: "personal", label: "👤 Bio & Roles" },
+            { key: "education", label: "🎓 Education" },
             {
               key: "projects",
               label: `🚀 Projects (${data.projects?.length || 0})`,
@@ -1035,6 +1288,161 @@ export default function AdminPanel() {
           </Row>
         )}
 
+        {/* ===================== TAB: EDUCATION ===================== */}
+        {activeTab === "education" && (
+          <div>
+            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+              <div>
+                <h3 className="fw-bold mb-1">
+                  Education <span className="purple">Timeline</span>
+                </h3>
+                <p className="text-muted small mb-0">
+                  Manage academic qualifications, degrees, and certificates.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="btn btn-outline-info"
+                onClick={addEducationItem}
+              >
+                + Add Qualification
+              </button>
+            </div>
+
+            <Row className="g-4">
+              {data.educationList && data.educationList.length > 0 ? (
+                data.educationList.map((edu, idx) => (
+                  <Col md={6} xl={4} key={edu.id || idx}>
+                    <Card className="project-card-view h-100">
+                      <Card.Body>
+                        <div className="d-flex justify-content-between mb-3">
+                          <h5 className="fw-bold text-white mb-0">Qualification #{idx + 1}</h5>
+                          <div>
+                            {idx > 0 && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-secondary me-2"
+                                onClick={() => moveEducationItem(idx, idx - 1)}
+                                title="Move Up"
+                              >
+                                ↑
+                              </button>
+                            )}
+                            {idx < data.educationList.length - 1 && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-secondary me-2"
+                                onClick={() => moveEducationItem(idx, idx + 1)}
+                                title="Move Down"
+                              >
+                                ↓
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => removeEducationItem(idx)}
+                              title="Delete"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mb-3">
+                          <label className="form-label text-muted small">Degree / Title</label>
+                          <input
+                            type="text"
+                            className="form-control admin-input"
+                            value={edu.degree || ""}
+                            onChange={(e) => updateEducationItem(idx, "degree", e.target.value)}
+                            placeholder="e.g. B.Tech in IT"
+                          />
+                        </div>
+
+                        <div className="mb-3">
+                          <label className="form-label text-muted small">Institution / College</label>
+                          <input
+                            type="text"
+                            className="form-control admin-input"
+                            value={edu.institution || ""}
+                            onChange={(e) => updateEducationItem(idx, "institution", e.target.value)}
+                            placeholder="e.g. GNDEC"
+                          />
+                        </div>
+
+                        <Row className="mb-3 g-2">
+                          <Col xs={6}>
+                            <label className="form-label text-muted small">Start Year</label>
+                            <input
+                              type="text"
+                              className="form-control admin-input"
+                              value={edu.startYear || ""}
+                              onChange={(e) => updateEducationItem(idx, "startYear", e.target.value)}
+                              placeholder="e.g. 2020"
+                            />
+                          </Col>
+                          <Col xs={6}>
+                            <label className="form-label text-muted small">End Year</label>
+                            <input
+                              type="text"
+                              className="form-control admin-input"
+                              value={edu.endYear || ""}
+                              onChange={(e) => updateEducationItem(idx, "endYear", e.target.value)}
+                              placeholder="e.g. 2024"
+                            />
+                          </Col>
+                        </Row>
+
+                        <Row className="mb-3 g-2">
+                          <Col xs={6}>
+                            <label className="form-label text-muted small">Status</label>
+                            <input
+                              type="text"
+                              className="form-control admin-input"
+                              value={edu.status || ""}
+                              onChange={(e) => updateEducationItem(idx, "status", e.target.value)}
+                              placeholder="e.g. Graduated, Pursuing"
+                            />
+                          </Col>
+                          <Col xs={6}>
+                            <label className="form-label text-muted small">Grade / Score</label>
+                            <input
+                              type="text"
+                              className="form-control admin-input"
+                              value={edu.grade || ""}
+                              onChange={(e) => updateEducationItem(idx, "grade", e.target.value)}
+                              placeholder="e.g. 8.5 CGPA"
+                            />
+                          </Col>
+                        </Row>
+
+                        <div className="mb-3">
+                          <label className="form-label text-muted small">Description / Highlights</label>
+                          <textarea
+                            className="form-control admin-input"
+                            rows="3"
+                            value={edu.description || ""}
+                            onChange={(e) => updateEducationItem(idx, "description", e.target.value)}
+                            placeholder="Key coursework, achievements, or societies..."
+                          />
+                        </div>
+
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <Col>
+                  <div className="text-center p-5 rounded" style={{ background: "rgba(255,255,255,0.02)" }}>
+                    <p className="text-muted mb-0">No education entries found.</p>
+                  </div>
+                </Col>
+              )}
+            </Row>
+          </div>
+        )}
+
         {/* ===================== TAB 3: PROJECTS STUDIO ===================== */}
         {activeTab === "projects" && (
           <div>
@@ -1235,6 +1643,34 @@ export default function AdminPanel() {
                         </button>
                       </div>
                     </div>
+
+                    <Form.Group className="mt-3 mb-2">
+                      <Form.Label className="small text-muted fw-bold">
+                        ARCHITECTURE & SYSTEM DESIGN (OPTIONAL)
+                      </Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={2}
+                        placeholder="e.g. Microservices, Supabase PostgreSQL, Edge runtime..."
+                        value={proj.architecture || ""}
+                        onChange={(e) => updateProject(idx, "architecture", e.target.value)}
+                        className="admin-input"
+                      />
+                    </Form.Group>
+
+                    <Form.Group className="mb-2">
+                      <Form.Label className="small text-muted fw-bold">
+                        ENGINEERING CHALLENGES & TRADE-OFFS (OPTIONAL)
+                      </Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        rows={2}
+                        placeholder="e.g. State synchronization challenges, caching vs freshness trade-offs..."
+                        value={proj.challenges || ""}
+                        onChange={(e) => updateProject(idx, "challenges", e.target.value)}
+                        className="admin-input"
+                      />
+                    </Form.Group>
                   </Card>
                 </Col>
               ))}

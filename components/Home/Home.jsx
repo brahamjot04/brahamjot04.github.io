@@ -17,8 +17,8 @@ function Home() {
       <Container fluid className="home-section" id="home">
         <Particle />
         <Container className="home-content">
-          <Row>
-            <Col md={7} className="home-header">
+          <Row className="justify-content-center">
+            <Col md={10} className="home-header text-center">
               <h1 style={{ paddingBottom: 15 }} className="heading">
                 Hi There!{" "}
                 <span className="wave" role="img" aria-labelledby="wave">
@@ -31,15 +31,15 @@ function Home() {
                 <strong className="main-name"> {personal.name?.toUpperCase() || "BRAHAMJOT SINGH"}</strong>
               </h1>
 
-              <p className="section-lead">
+              <p className="section-lead mx-auto">
                 {personal.tagline || "Building practical web products, exploring security, and shipping polished digital experiences."}
               </p>
 
-              <div style={{ padding: 50, textAlign: "left" }}>
+              <div style={{ padding: 50, textAlign: "center" }}>
                 <Type />
               </div>
 
-              <div className="hero-actions">
+              <div className="hero-actions justify-content-center">
                 <Link href="/project" className="hero-btn hero-btn-primary">
                   View Projects
                 </Link>
@@ -47,18 +47,6 @@ function Home() {
                   About Me
                 </Link>
               </div>
-            </Col>
-
-            <Col md={5} style={{ paddingBottom: 20 }}>
-              <Image
-                src={homeLogo}
-                alt="home pic"
-                className="img-fluid home-hero-graphic"
-                priority
-                style={{ width: "100%", height: "auto", maxHeight: "450px" }}
-                width={520}
-                height={520}
-              />
             </Col>
           </Row>
         </Container>

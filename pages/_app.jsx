@@ -11,8 +11,12 @@ import "../styles/index.css";
 import "../styles/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import FullscreenTerminal from "../components/Terminal/FullscreenTerminal";
+import { FaTerminal } from "react-icons/fa";
+
 export default function MyApp({ Component, pageProps }) {
   const [load, updateLoad] = useState(true);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -20,6 +24,24 @@ export default function MyApp({ Component, pageProps }) {
     }, 1200);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (e.key === "~" || e.key === "`") {
+        if (
+          e.target.tagName === "INPUT" ||
+          e.target.tagName === "TEXTAREA" ||
+          e.target.isContentEditable
+        ) {
+          return;
+        }
+        e.preventDefault();
+        setIsTerminalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
   const schemaData = {
@@ -99,6 +121,22 @@ export default function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
         <Footer />
         <ScrollToTop />
+        
+        {/* Terminal Launcher */}
+        <button
+          className="terminal-launcher-btn"
+          onClick={() => setIsTerminalOpen(true)}
+          title="Open Terminal (~)"
+          aria-label="Open Terminal"
+        >
+          <FaTerminal />
+        </button>
+
+        {/* Fullscreen Terminal Modal */}
+        <FullscreenTerminal
+          isOpen={isTerminalOpen}
+          onClose={() => setIsTerminalOpen(false)}
+        />
       </div>
       <SpeedInsights />
     </PortfolioProvider>

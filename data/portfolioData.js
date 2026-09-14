@@ -28,6 +28,18 @@ export const portfolioData = {
     location: "Punjab, India",
     email: "admin@brahamjot.dev"
   },
+  educationList: [
+    {
+      id: "edu_1",
+      degree: "B.Tech in Information Technology",
+      institution: "Guru Nanak Dev Engineering College, Ludhiana",
+      startYear: "2020",
+      endYear: "2024",
+      status: "Graduate / Fresher",
+      grade: "",
+      description: "Specialization in Information Technology. Coursework: Data Structures, Algorithms, Operating Systems, Database Management Systems, and Object-Oriented Programming in Java.",
+    },
+  ],
   socialLinks: {
     github: "https://github.com/brahamjot04",
     linkedin: "https://www.linkedin.com/in/brahamjotsingh/",

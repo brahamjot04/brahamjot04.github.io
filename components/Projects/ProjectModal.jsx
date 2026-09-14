@@ -107,6 +107,39 @@ function ProjectModal({ project, show, onHide, onTagClick }) {
             </div>
           </div>
         )}
+
+        {/* ENGINEERING DEEP DIVE (ARCHITECTURE & TRADE-OFFS) */}
+        {(project.architecture || project.challenges) && (
+          <div
+            className="project-engineering-section mb-4 p-3 rounded"
+            style={{
+              background: "rgba(0, 242, 254, 0.04)",
+              border: "1px solid rgba(0, 242, 254, 0.18)",
+            }}
+          >
+            <div className="small text-info fw-bold mb-3 d-flex align-items-center gap-2">
+              <span>⚡ ENGINEERING DEEP DIVE & ARCHITECTURE</span>
+            </div>
+
+            {project.architecture && (
+              <div className="mb-3">
+                <div className="small text-light fw-bold mb-1">Architecture & System Design:</div>
+                <p className="small text-muted mb-0" style={{ whiteSpace: "pre-line", lineHeight: "1.6" }}>
+                  {project.architecture}
+                </p>
+              </div>
+            )}
+
+            {project.challenges && (
+              <div>
+                <div className="small text-light fw-bold mb-1">Engineering Challenges & Trade-offs:</div>
+                <p className="small text-muted mb-0" style={{ whiteSpace: "pre-line", lineHeight: "1.6" }}>
+                  {project.challenges}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </Modal.Body>
 
       <div className="project-modal-footer p-3 p-md-4 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center flex-wrap gap-2">

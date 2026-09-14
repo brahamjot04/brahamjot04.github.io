@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Container, Row, Col } from "react-bootstrap";
-import myImg from "../../src/Assets/pfp-brahamjot.svg";
+import myImg from "../../src/Assets/IMG20250304153732-min.jpg";
 import Tilt from "react-parallax-tilt";
 import { usePortfolioData } from "../../context/PortfolioContext";
 import { getSocialIcon } from "../../lib/socialIcons";
@@ -54,7 +54,7 @@ function Home2() {
             <Tilt>
               <Image
                 src={myImg}
-                className="img-fluid"
+                className="avatar-glow"
                 alt="avatar"
                 width={360}
                 height={360}

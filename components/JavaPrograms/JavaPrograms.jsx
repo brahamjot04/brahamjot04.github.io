@@ -7,7 +7,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 const pdf = "/assets/JavaErrorQuestions.pdf";
 
@@ -44,6 +44,7 @@ function JavaPrograms() {
             variant="primary"
             href={pdf}
             target="_blank"
+            rel="noopener noreferrer"
             style={{ maxWidth: "250px" }}
           >
             <AiOutlineDownload />
@@ -64,7 +65,12 @@ function JavaPrograms() {
             error={
               <div className="text-center my-4 text-danger">
                 <p>Unable to preview PDF directly in browser.</p>
-                <Button variant="outline-primary" href={pdf} target="_blank">
+                <Button
+                  variant="outline-primary"
+                  href={pdf}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Open PDF Directly ↗
                 </Button>
               </div>
@@ -91,6 +97,7 @@ function JavaPrograms() {
             variant="primary"
             href={pdf}
             target="_blank"
+            rel="noopener noreferrer"
             style={{ maxWidth: "250px" }}
           >
             <AiOutlineDownload />
