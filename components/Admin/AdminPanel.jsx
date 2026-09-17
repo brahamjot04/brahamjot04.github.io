@@ -259,12 +259,18 @@ export default function AdminPanel() {
     }
 
     try {
-      const normalizedEmail = email.includes("@")
-        ? email.trim()
-        : `${email.trim().toLowerCase()}@portfolio.local`;
+      const trimmedEmail = email.trim();
+      if (!trimmedEmail.includes("@")) {
+        setAuthError("Error: Please enter your full administrator email (admin@brahamjot.dev)");
+        setIsAuthLoading(false);
+        setPassword("");
+        setActiveCliField("username");
+        setTimeout(() => usernameInputRef.current?.focus(), 50);
+        return;
+      }
 
       const { error } = await supabase.auth.signInWithPassword({
-        email: normalizedEmail,
+        email: trimmedEmail,
         password,
       });
       if (error) throw error;

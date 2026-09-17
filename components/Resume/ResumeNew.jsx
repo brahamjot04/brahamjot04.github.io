@@ -17,6 +17,7 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 import { usePortfolioData } from "../../context/PortfolioContext";
+import { getSafeUrl } from "../../lib/urlUtils";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
@@ -24,7 +25,8 @@ const defaultPdf = "/assets/Resume.pdf";
 
 function ResumeNew() {
   const { data } = usePortfolioData();
-  const pdf = data?.personal?.resumePdf || defaultPdf;
+  const rawPdf = data?.personal?.resumePdf || defaultPdf;
+  const pdf = getSafeUrl(rawPdf, defaultPdf);
   const [viewMode, setViewMode] = useState("interactive");
   const [numPages, setNumPages] = useState(null);
   const [width, setWidth] = useState(1200);

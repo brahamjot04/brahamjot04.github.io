@@ -5,6 +5,7 @@ import myImg from "../../src/Assets/IMG20250304153732-min.jpg";
 import Tilt from "react-parallax-tilt";
 import { usePortfolioData } from "../../context/PortfolioContext";
 import { getSocialIcon } from "../../lib/socialIcons";
+import { getSafeUrl } from "../../lib/urlUtils";
 import ContactForm from "../Contact/ContactForm";
 
 function Home2() {
@@ -83,7 +84,7 @@ function Home2() {
                 .map(([platform, url]) => (
                   <li key={platform} className="social-icons">
                     <a
-                      href={url}
+                      href={getSafeUrl(url)}
                       target="_blank"
                       rel="noreferrer"
                       className="icon-colour home-social-icons"

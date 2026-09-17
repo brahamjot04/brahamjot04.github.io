@@ -5,6 +5,7 @@ import { BsGithub } from "react-icons/bs";
 import { CgWebsite } from "react-icons/cg";
 import { AiOutlineClose, AiOutlineCheckCircle } from "react-icons/ai";
 import { FaStar } from "react-icons/fa";
+import { getSafeUrl } from "../../lib/urlUtils";
 
 function ProjectModal({ project, show, onHide, onTagClick }) {
   if (!project) return null;
@@ -152,20 +153,20 @@ function ProjectModal({ project, show, onHide, onTagClick }) {
         </button>
 
         <div className="d-flex gap-2">
-          {project.ghLink && (
+          {getSafeUrl(project.ghLink) && (
             <a
               className="admin-btn admin-btn-secondary admin-btn-sm text-decoration-none"
-              href={project.ghLink}
+              href={getSafeUrl(project.ghLink)}
               target="_blank"
               rel="noopener noreferrer"
             >
               <BsGithub /> GitHub
             </a>
           )}
-          {project.demoLink && (
+          {getSafeUrl(project.demoLink) && (
             <a
               className="admin-btn admin-btn-primary admin-btn-sm text-decoration-none"
-              href={project.demoLink}
+              href={getSafeUrl(project.demoLink)}
               target="_blank"
               rel="noopener noreferrer"
             >

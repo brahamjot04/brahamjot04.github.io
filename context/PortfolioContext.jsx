@@ -124,17 +124,6 @@ export function PortfolioProvider({ children }) {
       }
     }
 
-    // 2. Also notify local API route for disk persistence
-    try {
-      await fetch("/api/portfolio-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin: "2004", data: newData }),
-      });
-    } catch (err) {
-      // ignore
-    }
-
     return remoteSaved;
   };
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { usePortfolioData } from "../context/PortfolioContext";
 import { getSocialIcon } from "../lib/socialIcons";
+import { getSafeUrl } from "../lib/urlUtils";
 
 function Footer() {
   const { data } = usePortfolioData();
@@ -28,7 +29,7 @@ function Footer() {
               .map(([platform, url]) => (
                 <li key={platform} className="social-icons">
                   <a
-                    href={url}
+                    href={getSafeUrl(url)}
                     style={{ color: "white" }}
                     target="_blank"
                     rel="noopener noreferrer"

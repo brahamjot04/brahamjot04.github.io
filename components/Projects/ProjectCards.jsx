@@ -4,6 +4,7 @@ import Card from "react-bootstrap/Card";
 import { CgWebsite } from "react-icons/cg";
 import { BsGithub } from "react-icons/bs";
 import { FaStar } from "react-icons/fa";
+import { getSafeUrl } from "../../lib/urlUtils";
 
 function ProjectCards(props) {
   const imageSrc = props.imgPath?.src || props.imgPath || "/favicon.png";
@@ -73,10 +74,10 @@ function ProjectCards(props) {
             Details
           </button>
 
-          {props.ghLink && (
+          {getSafeUrl(props.ghLink) && (
             <a
               className="admin-btn admin-btn-secondary admin-btn-sm text-decoration-none"
-              href={props.ghLink}
+              href={getSafeUrl(props.ghLink)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`View ${props.title} on GitHub`}
@@ -86,10 +87,10 @@ function ProjectCards(props) {
             </a>
           )}
 
-          {!props.isBlog && props.demoLink && (
+          {!props.isBlog && getSafeUrl(props.demoLink) && (
             <a
               className="admin-btn admin-btn-primary admin-btn-sm text-decoration-none"
-              href={props.demoLink}
+              href={getSafeUrl(props.demoLink)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`View ${props.title} Live Demo`}
