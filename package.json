@@ -13,7 +13,7 @@
     "react-github-calendar": "^5.0.5",
     "react-icons": "^4.8.0",
     "react-parallax-tilt": "^1.7.320",
-    "react-pdf": "^10.4.1",
+    "react-pdf": "^11.0.0",
     "react-tsparticles": "^1.42.2",
     "typewriter-effect": "^2.22.0"
   },
