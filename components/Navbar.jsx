@@ -10,6 +10,7 @@ import {
   AiOutlineUser,
   AiOutlineLogout,
   AiOutlineDashboard,
+  AiOutlineShareAlt,
 } from "react-icons/ai";
 import { CgFileDocument } from "react-icons/cg";
 import {
@@ -37,6 +38,7 @@ function NavBar() {
     { href: "/about", label: "About", icon: AiOutlineUser },
     { href: "/project", label: "Projects", icon: AiOutlineFundProjectionScreen },
     { href: "/resume", label: "Resume", icon: CgFileDocument },
+    { href: "/socials", label: "Socials", icon: AiOutlineShareAlt },
   ];
 
   function scrollHandler() {

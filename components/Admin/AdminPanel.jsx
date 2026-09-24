@@ -1130,6 +1130,20 @@ export default function AdminPanel() {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
+                  <Form.Label className="small text-muted fw-bold">PHONE / WHATSAPP NUMBER (OPTIONAL)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={data.personal?.phone || ""}
+                    placeholder="Leave empty or enter e.g. +91 98765 43210"
+                    onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                    className="admin-input"
+                  />
+                  <Form.Text className="text-muted small">
+                    Optional direct contact number featured on your public &quot;/socials&quot; link hub (hidden if blank).
+                  </Form.Text>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
                   <Form.Label className="small text-muted fw-bold">LOCATION</Form.Label>
                   <Form.Control
                     type="text"
