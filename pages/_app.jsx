@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import { Manrope, Sora } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -14,14 +15,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FullscreenTerminal from "../components/Terminal/FullscreenTerminal";
 import { FaTerminal } from "react-icons/fa";
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const sora = Sora({
+  subsets: ["latin"],
+  weight: ["500", "700", "800"],
+  variable: "--font-sora",
+  display: "swap",
+});
+
 export default function MyApp({ Component, pageProps }) {
   const [load, updateLoad] = useState(true);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
 
   useEffect(() => {
+    // Dismiss preloader quickly upon client mount to avoid blocking FCP / LCP
     const timer = setTimeout(() => {
       updateLoad(false);
-    }, 1200);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);
@@ -116,9 +132,11 @@ export default function MyApp({ Component, pageProps }) {
       </Head>
 
       <Preloader load={load} />
-      <div className="App" id={load ? "no-scroll" : "scroll"}>
+      <div className={`App ${manrope.variable} ${sora.variable}`} id={load ? "no-scroll" : "scroll"}>
         <Navbar />
-        <Component {...pageProps} />
+        <main id="main-content" role="main">
+          <Component {...pageProps} />
+        </main>
         <Footer />
         <ScrollToTop />
         
