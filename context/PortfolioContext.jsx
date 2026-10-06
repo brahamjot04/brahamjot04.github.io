@@ -1,6 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { portfolioData as defaultData } from "../data/portfolioData";
-import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
+
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_portfolio_SUPABASE_URL ||
+  "";
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_portfolio_SUPABASE_ANON_KEY ||
+  "";
+
+export const isSupabaseConfigured = Boolean(
+  supabaseUrl &&
+  supabaseAnonKey &&
+  supabaseUrl.startsWith("http") &&
+  !supabaseUrl.includes("your-project-ref")
+);
 
 const PortfolioContext = createContext({
   data: defaultData,
@@ -21,54 +36,91 @@ export function PortfolioProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    if (isSupabaseConfigured && supabase) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          setUser(session.user);
-          setIsAuthenticated(true);
-        } else {
-          setUser(null);
-          setIsAuthenticated(false);
-        }
-      });
+    if (typeof window === "undefined" || !isSupabaseConfigured) return;
 
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user || null);
-        setIsAuthenticated(Boolean(session?.user));
-      });
+    // Check if an active Supabase session exists in localStorage
+    const hasSession = Object.keys(localStorage).some(
+      (k) =>
+        (k.startsWith("sb-") && k.endsWith("-auth-token")) ||
+        k.includes("supabase.auth.token")
+    );
 
-      return () => subscription.unsubscribe();
+    let unsubscribe = null;
+    if (hasSession) {
+      import("../lib/supabaseClient").then(({ supabase }) => {
+        if (!supabase) return;
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            setUser(session.user);
+            setIsAuthenticated(true);
+          } else {
+            setUser(null);
+            setIsAuthenticated(false);
+          }
+        });
+
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+          setUser(session?.user || null);
+          setIsAuthenticated(Boolean(session?.user));
+        });
+
+        unsubscribe = () => subscription?.unsubscribe();
+      });
     }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const logout = async () => {
-    if (isSupabaseConfigured && supabase) {
-      await supabase.auth.signOut();
+    if (isSupabaseConfigured) {
+      const { supabase } = await import("../lib/supabaseClient");
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
     }
     setUser(null);
     setIsAuthenticated(false);
   };
 
-  // Fetch live portfolio data from Supabase
+  // Fetch live portfolio data from Supabase via lightweight native fetch
   const fetchSupabaseData = async () => {
     try {
-      if (isSupabaseConfigured && supabase) {
-        const { data: row, error } = await supabase
-          .from("portfolio_content")
-          .select("content")
-          .eq("id", "main_config")
-          .maybeSingle();
-
-        if (row && row.content) {
-          const content = { ...row.content };
-          if (content.personal?.email === "brahamjot2004@gmail.com" || !content.personal?.email) {
-            content.personal = { ...content.personal, email: "admin@brahamjot.dev" };
+      if (isSupabaseConfigured && supabaseUrl && supabaseAnonKey) {
+        const res = await fetch(
+          `${supabaseUrl}/rest/v1/portfolio_content?select=content&id=eq.main_config`,
+          {
+            headers: {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseAnonKey}`,
+            },
           }
-          setData(content);
-          localStorage.setItem("portfolio_custom_data", JSON.stringify(content));
-          return;
+        );
+
+        if (res.ok) {
+          const rows = await res.json();
+          const row = rows?.[0];
+          if (row && row.content) {
+            const content = { ...row.content };
+            if (
+              content.personal?.email === "brahamjot2004@gmail.com" ||
+              !content.personal?.email
+            ) {
+              content.personal = {
+                ...content.personal,
+                email: "admin@brahamjot.dev",
+              };
+            }
+            setData(content);
+            localStorage.setItem(
+              "portfolio_custom_data",
+              JSON.stringify(content)
+            );
+            return;
+          }
         }
       }
 
@@ -77,8 +129,14 @@ export function PortfolioProvider({ children }) {
       if (cached) {
         try {
           const parsed = JSON.parse(cached);
-          if (parsed.personal?.email === "brahamjot2004@gmail.com" || !parsed.personal?.email) {
-            parsed.personal = { ...parsed.personal, email: "admin@brahamjot.dev" };
+          if (
+            parsed.personal?.email === "brahamjot2004@gmail.com" ||
+            !parsed.personal?.email
+          ) {
+            parsed.personal = {
+              ...parsed.personal,
+              email: "admin@brahamjot.dev",
+            };
           }
           setData(parsed);
         } catch (e) {
@@ -98,8 +156,14 @@ export function PortfolioProvider({ children }) {
       const cached = localStorage.getItem("portfolio_custom_data");
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed.personal?.email === "brahamjot2004@gmail.com" || !parsed.personal?.email) {
-          parsed.personal = { ...parsed.personal, email: "admin@brahamjot.dev" };
+        if (
+          parsed.personal?.email === "brahamjot2004@gmail.com" ||
+          !parsed.personal?.email
+        ) {
+          parsed.personal = {
+            ...parsed.personal,
+            email: "admin@brahamjot.dev",
+          };
         }
         setData(parsed);
       }
@@ -110,7 +174,9 @@ export function PortfolioProvider({ children }) {
     // 2. Defer remote Supabase revalidation to idle time to keep main thread free
     if (typeof window !== "undefined") {
       if ("requestIdleCallback" in window) {
-        const idleId = window.requestIdleCallback(() => fetchSupabaseData(), { timeout: 2500 });
+        const idleId = window.requestIdleCallback(() => fetchSupabaseData(), {
+          timeout: 2500,
+        });
         return () => window.cancelIdleCallback(idleId);
       } else {
         const timer = setTimeout(fetchSupabaseData, 800);
@@ -126,21 +192,24 @@ export function PortfolioProvider({ children }) {
 
     let remoteSaved = false;
 
-    // 1. Try Supabase save
-    if (isSupabaseConfigured && supabase) {
+    // 1. Try Supabase save dynamically
+    if (isSupabaseConfigured) {
       try {
-        const { error } = await supabase
-          .from("portfolio_content")
-          .upsert({
-            id: "main_config",
-            content: newData,
-            updated_at: new Date().toISOString(),
-          });
+        const { supabase } = await import("../lib/supabaseClient");
+        if (supabase) {
+          const { error } = await supabase
+            .from("portfolio_content")
+            .upsert({
+              id: "main_config",
+              content: newData,
+              updated_at: new Date().toISOString(),
+            });
 
-        if (!error) {
-          remoteSaved = true;
-        } else {
-          console.error("Supabase upsert error:", error);
+          if (!error) {
+            remoteSaved = true;
+          } else {
+            console.error("Supabase upsert error:", error);
+          }
         }
       } catch (err) {
         console.error("Supabase save exception:", err);
@@ -150,10 +219,17 @@ export function PortfolioProvider({ children }) {
     return remoteSaved;
   };
 
-  // Upload file asset to Supabase Storage
+  // Upload file asset to Supabase Storage dynamically
   const uploadAsset = async (file, folder = "resumes") => {
-    if (!isSupabaseConfigured || !supabase) {
-      throw new Error("Supabase is not configured yet. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local");
+    if (!isSupabaseConfigured) {
+      throw new Error(
+        "Supabase is not configured yet. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local"
+      );
+    }
+
+    const { supabase } = await import("../lib/supabaseClient");
+    if (!supabase) {
+      throw new Error("Supabase client is not available.");
     }
 
     const fileExt = file.name.split(".").pop();

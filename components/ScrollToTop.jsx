@@ -18,12 +18,18 @@ function ScrollToTop() {
       );
     };
 
-    measureHeight();
-    window.addEventListener("resize", measureHeight, { passive: true });
+    const handleResize = () => {
+      cachedDocHeight = 0;
+    };
+
+    window.addEventListener("resize", handleResize, { passive: true });
 
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
+          if (cachedDocHeight === 0) {
+            measureHeight();
+          }
           const scrollTop = window.scrollY;
           const progress = cachedDocHeight > 0 ? (scrollTop / cachedDocHeight) * 100 : 0;
           setScrollProgress(progress);
@@ -37,7 +43,7 @@ function ScrollToTop() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", measureHeight);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

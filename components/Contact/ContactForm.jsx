@@ -8,7 +8,6 @@ import {
   AiOutlineUser,
 } from "react-icons/ai";
 import { FaLinkedinIn, FaPaperPlane } from "react-icons/fa";
-import { supabase, isSupabaseConfigured } from "../../lib/supabaseClient";
 import { usePortfolioData } from "../../context/PortfolioContext";
 import TurnstileWidget from "./TurnstileWidget";
 
@@ -36,6 +35,7 @@ function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isAdblockerDetected, setIsAdblockerDetected] = useState(false);
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(recipientEmail);

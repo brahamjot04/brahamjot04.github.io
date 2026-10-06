@@ -27,6 +27,11 @@ const nextConfig = {
     optimizeCss: true,
     optimizePackageImports: ["react-bootstrap", "react-icons"],
   },
+  modularizeImports: {
+    "react-bootstrap": {
+      transform: "react-bootstrap/{{member}}",
+    },
+  },
   turbopack: {
     resolveAlias: {
       "../build/polyfills/polyfill-module": "./lib/emptyPolyfill.js",
