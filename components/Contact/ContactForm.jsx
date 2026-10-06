@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Form, Alert, Spinner } from "react-bootstrap";
 import {
   AiOutlineMail,
@@ -10,6 +10,7 @@ import {
 import { FaLinkedinIn, FaPaperPlane } from "react-icons/fa";
 import { supabase, isSupabaseConfigured } from "../../lib/supabaseClient";
 import { usePortfolioData } from "../../context/PortfolioContext";
+import TurnstileWidget from "./TurnstileWidget";
 
 function ContactForm() {
   const { data } = usePortfolioData();
@@ -29,6 +30,8 @@ function ContactForm() {
   });
 
   const [honeypot, setHoneypot] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const turnstileRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -45,12 +48,19 @@ function ContactForm() {
     setIsSubmitting(true);
     setErrorMsg("");
 
-    // Bot trap: if honeypot is filled, silently discard without inserting
+    // Bot trap: if honeypot is filled, silently discard
     if (honeypot) {
       setTimeout(() => {
         setIsSubmitting(false);
         setSubmitted(true);
       }, 500);
+      return;
+    }
+
+    // Security verification check
+    if (!turnstileToken) {
+      setErrorMsg("Please complete the security challenge before sending.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -70,36 +80,39 @@ function ContactForm() {
     }
 
     try {
-      if (isSupabaseConfigured && supabase) {
-        const { error } = await supabase.from("contact_messages").insert([
-          {
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            subject: formData.subject.trim() || "Portfolio Contact Inquiry",
-            message: formData.message.trim(),
-          },
-        ]);
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim() || "Portfolio Contact Inquiry",
+          message: formData.message.trim(),
+          "cf-turnstile-response": turnstileToken,
+          honeypot,
+        }),
+      });
 
-        if (error) {
-          console.warn("Supabase contact_messages write note:", error);
-          const mailBody = `From: ${formData.name} (${formData.email})\n\n${formData.message}`;
-          window.location.href = `mailto:${recipientEmail}?subject=${encodeURIComponent(
-            formData.subject || "Portfolio Inquiry"
-          )}&body=${encodeURIComponent(mailBody)}`;
-        }
-      } else {
-        const mailBody = `From: ${formData.name} (${formData.email})\n\n${formData.message}`;
-        window.location.href = `mailto:${recipientEmail}?subject=${encodeURIComponent(
-          formData.subject || "Portfolio Inquiry"
-        )}&body=${encodeURIComponent(mailBody)}`;
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setErrorMsg(data.error || "Failed to send message. Please try again or email directly.");
+        turnstileRef.current?.reset();
+        setTurnstileToken("");
+        return;
       }
 
       localStorage.setItem("last_contact_submit_ts", Date.now().toString());
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
+      setTurnstileToken("");
     } catch (err) {
       console.error("Contact submit error:", err);
-      setErrorMsg("An unexpected error occurred. You can also reach me directly via email.");
+      setErrorMsg("An unexpected network error occurred. Please try again or email directly.");
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
     } finally {
       setIsSubmitting(false);
     }
@@ -270,11 +283,31 @@ function ContactForm() {
             />
           </Form.Group>
 
+          {/* Cloudflare Turnstile Bot Protection Widget */}
+          <div className="mb-4 d-flex justify-content-center">
+            <TurnstileWidget
+              ref={turnstileRef}
+              onSuccess={(token) => {
+                setTurnstileToken(token);
+                setErrorMsg("");
+              }}
+              onError={() => {
+                setTurnstileToken("");
+                setErrorMsg("Security challenge failed to load. Please check your connection.");
+              }}
+              onExpire={() => {
+                setTurnstileToken("");
+              }}
+              action="contact"
+              theme="dark"
+            />
+          </div>
+
           <div className="d-flex justify-content-end">
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !turnstileToken}
             >
               {isSubmitting ? (
                 <>

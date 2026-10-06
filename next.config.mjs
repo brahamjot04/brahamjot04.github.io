@@ -2,12 +2,12 @@
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://challenges.cloudflare.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com data:;
   img-src 'self' data: blob: https:;
-  connect-src 'self' https://fvopyydvcietjwhehjvk.supabase.co wss://fvopyydvcietjwhehjvk.supabase.co https://vitals.vercel-insights.com https://api.github.com https://github-contributions-api.jogruber.de;
-  frame-src 'self' https://gndecedu-my.sharepoint.com;
+  connect-src 'self' https://fvopyydvcietjwhehjvk.supabase.co wss://fvopyydvcietjwhehjvk.supabase.co https://vitals.vercel-insights.com https://api.github.com https://github-contributions-api.jogruber.de https://challenges.cloudflare.com;
+  frame-src 'self' https://gndecedu-my.sharepoint.com https://challenges.cloudflare.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
