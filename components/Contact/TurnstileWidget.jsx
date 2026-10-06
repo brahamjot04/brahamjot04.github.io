@@ -84,37 +84,58 @@ const TurnstileWidget = forwardRef(function TurnstileWidget(
       }
     };
 
-    // Load Turnstile script if not present
-    if (!window.turnstile) {
-      const existingScript = document.querySelector(`script[src^="${SCRIPT_URL}"]`);
-      if (!existingScript) {
-        const script = document.createElement("script");
-        script.src = SCRIPT_URL;
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
-          if (isMounted && window.turnstile) {
-            renderWidget();
-          }
-        };
-        script.onerror = () => {
-          console.warn("Turnstile script failed to load (possible adblocker).");
-          if (isMounted && onError) onError("script_load_failed");
-        };
-        document.head.appendChild(script);
+    const loadScriptAndRender = () => {
+      if (!window.turnstile) {
+        const existingScript = document.querySelector(`script[src^="${SCRIPT_URL}"]`);
+        if (!existingScript) {
+          const script = document.createElement("script");
+          script.src = SCRIPT_URL;
+          script.async = true;
+          script.defer = true;
+          script.onload = () => {
+            if (isMounted && window.turnstile) {
+              renderWidget();
+            }
+          };
+          script.onerror = () => {
+            console.warn("Turnstile script failed to load (possible adblocker/Brave Shields).");
+            if (isMounted && onError) onError("script_load_failed");
+          };
+          document.head.appendChild(script);
+        } else {
+          existingScript.addEventListener("load", () => {
+            if (isMounted && window.turnstile) {
+              renderWidget();
+            }
+          });
+          existingScript.addEventListener("error", () => {
+            if (isMounted && onError) onError("script_load_failed");
+          });
+        }
       } else {
-        existingScript.addEventListener("load", () => {
-          if (isMounted && window.turnstile) {
-            renderWidget();
-          }
-        });
+        renderWidget();
       }
+    };
+
+    let observer;
+    if ("IntersectionObserver" in window && containerRef.current) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]?.isIntersecting) {
+            loadScriptAndRender();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: "200px" }
+      );
+      observer.observe(containerRef.current);
     } else {
-      renderWidget();
+      loadScriptAndRender();
     }
 
     return () => {
       isMounted = false;
+      if (observer) observer.disconnect();
       if (widgetIdRef.current !== null && window.turnstile) {
         try {
           window.turnstile.remove(widgetIdRef.current);

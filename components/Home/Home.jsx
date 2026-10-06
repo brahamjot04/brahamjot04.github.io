@@ -1,12 +1,13 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Container, Row, Col } from "react-bootstrap";
-import homeLogo from "../../src/Assets/home-main.svg";
-import Particle from "../Particle";
 import Home2 from "./Home2";
 import Type from "./Type";
 import { usePortfolioData } from "../../context/PortfolioContext";
+
+const Particle = dynamic(() => import("../Particle"), { ssr: false });
 
 function Home() {
   const { data } = usePortfolioData();

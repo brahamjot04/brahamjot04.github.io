@@ -128,7 +128,7 @@ a:focus-visible {
   width: 100%;
   z-index: 90;
   padding: 0.75rem 2rem !important;
-  transition: all 0.28s ease;
+  transition: background-color 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
   overflow: visible;
 }
 
@@ -213,6 +213,7 @@ a:focus-visible {
   font-family: var(--font-sora), "Sora", "Segoe UI", sans-serif;
   font-size: 1.12rem;
   letter-spacing: 0.05em;
+  color: #ffffff !important;
   margin: 0;
 }
 
@@ -1132,7 +1133,7 @@ a:focus-visible {
 .footer-copywright h3 {
   margin: 0;
   font-size: 0.98rem;
-  color: var(--text-main);
+  color: #ffffff !important;
 }
 
 .footer-copywright {
@@ -2809,7 +2810,7 @@ a:focus-visible {
   cursor: pointer;
   z-index: 999;
   backdrop-filter: blur(5px);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .terminal-launcher-btn:hover {

@@ -218,43 +218,39 @@ function ContactForm() {
           )}
 
           <div className="row g-3 mb-3">
-            <div className="col-md-6">
-              <Form.Group>
-                <Form.Label className="small text-muted fw-bold">
-                  YOUR NAME <span className="text-danger">*</span>
-                </Form.Label>
-                <div className="contact-input-wrapper">
-                  <AiOutlineUser className="contact-input-icon" />
-                  <Form.Control
-                    type="text"
-                    placeholder="e.g. Alex Johnson"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="contact-input"
-                    required
-                  />
-                </div>
-              </Form.Group>
-            </div>
+            <Form.Group className="col-md-6">
+              <Form.Label className="small text-muted fw-bold">
+                YOUR NAME <span className="text-danger">*</span>
+              </Form.Label>
+              <div className="contact-input-wrapper">
+                <AiOutlineUser className="contact-input-icon" />
+                <Form.Control
+                  type="text"
+                  placeholder="e.g. Alex Johnson"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="contact-input"
+                  required
+                />
+              </div>
+            </Form.Group>
 
-            <div className="col-md-6">
-              <Form.Group>
-                <Form.Label className="small text-muted fw-bold">
-                  YOUR EMAIL <span className="text-danger">*</span>
-                </Form.Label>
-                <div className="contact-input-wrapper">
-                  <AiOutlineMail className="contact-input-icon" />
-                  <Form.Control
-                    type="email"
-                    placeholder="e.g. alex@company.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="contact-input"
-                    required
-                  />
-                </div>
-              </Form.Group>
-            </div>
+            <Form.Group className="col-md-6">
+              <Form.Label className="small text-muted fw-bold">
+                YOUR EMAIL <span className="text-danger">*</span>
+              </Form.Label>
+              <div className="contact-input-wrapper">
+                <AiOutlineMail className="contact-input-icon" />
+                <Form.Control
+                  type="email"
+                  placeholder="e.g. alex@company.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="contact-input"
+                  required
+                />
+              </div>
+            </Form.Group>
           </div>
 
           <Form.Group className="mb-3">
@@ -291,9 +287,16 @@ function ContactForm() {
                 setTurnstileToken(token);
                 setErrorMsg("");
               }}
-              onError={() => {
+              onError={(err) => {
                 setTurnstileToken("");
-                setErrorMsg("Security challenge failed to load. Please check your connection.");
+                if (err === "script_load_failed") {
+                  setIsAdblockerDetected(true);
+                  setErrorMsg(
+                    "Brave Shields or Content Blocker detected — Turnstile could not load. You can email directly below."
+                  );
+                } else {
+                  setErrorMsg("Security challenge failed to load. Please check your connection.");
+                }
               }}
               onExpire={() => {
                 setTurnstileToken("");
@@ -302,6 +305,20 @@ function ContactForm() {
               theme="dark"
             />
           </div>
+
+          {isAdblockerDetected && (
+            <div className="mb-4 p-3 text-center rounded" style={{ background: "rgba(255, 179, 71, 0.1)", border: "1px solid rgba(255, 179, 71, 0.4)" }}>
+              <p className="text-warning small mb-2">
+                🛡️ <strong>Brave Shields or Content Blocker Detected</strong>: Cloudflare Turnstile was prevented from loading.
+              </p>
+              <a
+                href={`mailto:${recipientEmail}?subject=${encodeURIComponent(formData.subject || "Portfolio Inquiry")}&body=${encodeURIComponent(formData.message)}`}
+                className="btn btn-sm btn-outline-warning"
+              >
+                Send via Email ({recipientEmail})
+              </a>
+            </div>
+          )}
 
           <div className="d-flex justify-content-end">
             <button

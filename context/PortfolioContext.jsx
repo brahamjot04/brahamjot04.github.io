@@ -93,7 +93,30 @@ export function PortfolioProvider({ children }) {
   };
 
   useEffect(() => {
-    fetchSupabaseData();
+    // 1. Instant cache hydration (stale-while-revalidate)
+    try {
+      const cached = localStorage.getItem("portfolio_custom_data");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.personal?.email === "brahamjot2004@gmail.com" || !parsed.personal?.email) {
+          parsed.personal = { ...parsed.personal, email: "admin@brahamjot.dev" };
+        }
+        setData(parsed);
+      }
+    } catch (e) {
+      // ignore parsing error
+    }
+
+    // 2. Defer remote Supabase revalidation to idle time to keep main thread free
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        const idleId = window.requestIdleCallback(() => fetchSupabaseData(), { timeout: 2500 });
+        return () => window.cancelIdleCallback(idleId);
+      } else {
+        const timer = setTimeout(fetchSupabaseData, 800);
+        return () => clearTimeout(timer);
+      }
+    }
   }, []);
 
   // Save updated data to Supabase and local cache

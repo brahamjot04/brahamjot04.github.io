@@ -7,13 +7,18 @@ import Footer from "../components/Footer";
 import Preloader from "../components/Pre";
 import ScrollToTop from "../components/ScrollToTop";
 import { PortfolioProvider } from "../context/PortfolioContext";
+import dynamic from "next/dynamic";
 import "../styles/App.css";
 import "../styles/index.css";
 import "../styles/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import FullscreenTerminal from "../components/Terminal/FullscreenTerminal";
 import { FaTerminal } from "react-icons/fa";
+
+const FullscreenTerminal = dynamic(
+  () => import("../components/Terminal/FullscreenTerminal"),
+  { ssr: false }
+);
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -151,10 +156,12 @@ export default function MyApp({ Component, pageProps }) {
         </button>
 
         {/* Fullscreen Terminal Modal */}
-        <FullscreenTerminal
-          isOpen={isTerminalOpen}
-          onClose={() => setIsTerminalOpen(false)}
-        />
+        {isTerminalOpen && (
+          <FullscreenTerminal
+            isOpen={isTerminalOpen}
+            onClose={() => setIsTerminalOpen(false)}
+          />
+        )}
       </div>
       <SpeedInsights />
     </PortfolioProvider>

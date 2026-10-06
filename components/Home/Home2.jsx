@@ -1,12 +1,14 @@
 import React from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { Container, Row, Col } from "react-bootstrap";
 import myImg from "../../src/Assets/IMG20250304153732-min.jpg";
-import Tilt from "react-parallax-tilt";
 import { usePortfolioData } from "../../context/PortfolioContext";
 import { getSocialIcon } from "../../lib/socialIcons";
 import { getSafeUrl } from "../../lib/urlUtils";
-import ContactForm from "../Contact/ContactForm";
+
+const Tilt = dynamic(() => import("react-parallax-tilt"), { ssr: false });
+const ContactForm = dynamic(() => import("../Contact/ContactForm"), { ssr: false });
 
 function Home2() {
   const { data } = usePortfolioData();
