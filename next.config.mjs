@@ -1,3 +1,5 @@
+import path from "node:path";
+
 /** @type {import('next').NextConfig} */
 
 const cspHeader = `
@@ -15,12 +17,40 @@ const cspHeader = `
 
 const nextConfig = {
   reactStrictMode: true,
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
+  },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ["react-bootstrap", "react-icons"],
+  },
+  turbopack: {
+    resolveAlias: {
+      "../build/polyfills/polyfill-module": "./lib/emptyPolyfill.js",
+      "../../build/polyfills/polyfill-module": "./lib/emptyPolyfill.js",
+      "next/dist/build/polyfills/polyfill-module": "./lib/emptyPolyfill.js",
+    },
+  },
   allowedDevOrigins: [
     "localhost:3000",
     "127.0.0.1:3000",
     "192.168.57.202:3000",
     "192.168.57.202",
   ],
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "../build/polyfills/polyfill-module": path.resolve("./lib/emptyPolyfill.js"),
+        "../../build/polyfills/polyfill-module": path.resolve("./lib/emptyPolyfill.js"),
+        "next/dist/build/polyfills/polyfill-module": path.resolve("./lib/emptyPolyfill.js"),
+      };
+    }
+    return config;
+  },
   async headers() {
     return [
       {

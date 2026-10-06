@@ -94,19 +94,23 @@ const TurnstileWidget = forwardRef(function TurnstileWidget(
         script.defer = true;
         script.onload = () => {
           if (isMounted && window.turnstile) {
-            window.turnstile.ready(renderWidget);
+            renderWidget();
           }
+        };
+        script.onerror = () => {
+          console.warn("Turnstile script failed to load (possible adblocker).");
+          if (isMounted && onError) onError("script_load_failed");
         };
         document.head.appendChild(script);
       } else {
         existingScript.addEventListener("load", () => {
           if (isMounted && window.turnstile) {
-            window.turnstile.ready(renderWidget);
+            renderWidget();
           }
         });
       }
     } else {
-      window.turnstile.ready(renderWidget);
+      renderWidget();
     }
 
     return () => {

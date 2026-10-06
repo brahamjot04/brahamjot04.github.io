@@ -8,16 +8,37 @@ function ScrollToTop() {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
+    let ticking = false;
+    let cachedDocHeight = 0;
+
+    const measureHeight = () => {
+      cachedDocHeight = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        1
+      );
+    };
+
+    measureHeight();
+    window.addEventListener("resize", measureHeight, { passive: true });
+
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      setScrollProgress(progress);
-      setIsVisible(scrollTop > 280);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollTop = window.scrollY;
+          const progress = cachedDocHeight > 0 ? (scrollTop / cachedDocHeight) * 100 : 0;
+          setScrollProgress(progress);
+          setIsVisible(scrollTop > 280);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", measureHeight);
+    };
   }, []);
 
   // Global Keyboard Shortcut: Press "/" to jump to Projects or focus search

@@ -41,16 +41,19 @@ function NavBar() {
     { href: "/socials", label: "Socials", icon: AiOutlineShareAlt },
   ];
 
-  function scrollHandler() {
-    if (window.scrollY >= 20) {
-      updateNavbar(true);
-    } else {
-      updateNavbar(false);
-    }
-  }
-
   useEffect(() => {
-    window.addEventListener("scroll", scrollHandler);
+    let ticking = false;
+    function scrollHandler() {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateNavbar(window.scrollY >= 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    window.addEventListener("scroll", scrollHandler, { passive: true });
     return () => {
       window.removeEventListener("scroll", scrollHandler);
     };
